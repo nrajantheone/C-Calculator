@@ -100,6 +100,9 @@ class Operand {
       case MULTIPLY:
         printf("Multiply: Type = %d\n", type);
         return product(rhs);
+      case DIVIDE:
+        printf("Divide: ");
+        return quotient(rhs);
     }
     return QUIT;
   }
@@ -210,6 +213,20 @@ class Operand {
         std::cout << "INCORRECT INPUT ERROR" << std::endl;
     }
     return QUIT;
+  }
+
+  OPERAND_TYPE quotient(const Operand& rhs) {
+    switch(type){
+      case INTEGER:
+        dvalue = value / (rhs.type == INTEGER ? rhs.value : rhs.dvalue);
+        return set(DOUBLE);
+      case DOUBLE:
+        dvalue = dvalue / (rhs.type == INTEGER ? rhs.value : rhs.dvalue);
+        return set(DOUBLE);
+      default:    
+        break;
+    } 
+    return set(QUIT);
   }
 
   OPERAND_TYPE set(const OPERAND_TYPE type) {
