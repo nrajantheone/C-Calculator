@@ -35,6 +35,8 @@ class Operand {
   }
   Operand(const Operand& rhs) : data(NULL) , length(rhs.length) , dvalue(rhs.dvalue) , value(rhs.value) , type(rhs.type) , resultType(rhs.resultType) {
     allocateMemory();
+    if(rhs.type == STRING)
+      strcpy((char*)data, (const char*)rhs.data);
   }
 
   ~Operand() {
@@ -183,16 +185,26 @@ class Operand {
   static bool isStringProduct(const OPERAND_TYPE a, const OPERAND_TYPE b) {
     return (a == STRING && b == INTEGER) || ( a == INTEGER && b == STRING);
   }
-
   OPERAND_TYPE product(const Operand& rhs) {
     printf("Product Types: Type = %d, rhs.type = %d \n", type, rhs.type);
-    if(isStringProduct(type, rhs.type)) makeStringProduct(rhs);
+    if(isStringProduct(type, rhs.type)) {
+      makeStringProduct(rhs);
+      return set(STRING);
+    }
     switch(rhs.type){
       case INTEGER:
+        {
+          if(type == INTEGER) {
+            value *= rhs.value;
+            return set(INTEGER);
+          }
+          dvalue *= rhs.value;
+          return set(DOUBLE);
+        }
         value *= rhs.value;
         return set(INTEGER);
       case DOUBLE:
-        dvalue *= rhs.value;
+        dvalue *= rhs.dvalue;
         return set(DOUBLE);
       default:
         std::cout << "INCORRECT INPUT ERROR" << std::endl;
