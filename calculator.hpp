@@ -2,10 +2,13 @@
 #define _CALCULATOR_HPP_ 1
 
 inline int skipSpaces(char& c) {
-  int i = 0;
-  for(;isspace(c = getchar()); i++) {
-    std::cout << c << std::endl;
+  if(isspace(c)) {
+    int i = 0;
+    for(;isspace(c = getchar()); i++) {
+      std::cout << c << std::endl;
+    }
+    return i;
   }
-  return i;
+  return 0;
 }
 #endif // _CALCULATOR_HPP_

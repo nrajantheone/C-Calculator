@@ -31,8 +31,9 @@ class Operator {
   public:
 
   Operator(int& column): _op(NONE) {
-    char c;
-    column = skipSpaces(c);
+    char c = getchar();
+    column += skipSpaces(c);
+    printf("column = %d \n", column);
     _op = isOperator(c);
   }
   OPERATOR getOP() const {

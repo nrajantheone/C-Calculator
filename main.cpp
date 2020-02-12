@@ -9,6 +9,7 @@ int main() {
    std::cout << ">>>>>>>>>" << std::endl;
    Operand  a(column);
    Operator o(column);
+   printf("Operator = %d \n", o.getOP());
    Operand  b(column);
    Operand  result(a);
    quit = result.perform(b, o) == QUIT;
