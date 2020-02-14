@@ -24,12 +24,14 @@ class Operand {
     char c = '\0';
     int i = 0;
     column = skipSpaces(c);
+    printf("column = %d char = %c\n", column, c);
     column += collectCharacters(c);
+    printf("column = %d char = %c\n", column, c);
     if(!convertToFloat())
       if(!convertToInteger()) {
         type = STRING;
       }
-    printf("ConvertedToFloat = %d, column = %d, char c = %c\n", type, column, c);
+    printf("dvalue = %g\n", dvalue);
   }
   Operand() : data(NULL), length(0), dvalue(0.0), value(0), type(QUIT), resultType(QUIT) {
     allocateMemory();
@@ -57,10 +59,8 @@ class Operand {
     for(; isOperator(c = getchar()) == NONE && !isspace(c); i++ ) {
       ((char*)data)[i] = c;    
     }
+    if(isOperator(c)) ungetc(c, stdin);
     ((char*)data)[i + 1] = '\0';
-    //std::cout << "i = " << i << std::endl;
-    //std::string s((char*)data);
-    //std::cout << s << std::endl;
     return (length = i);
   }
 
@@ -104,9 +104,6 @@ class Operand {
       case DIVIDE:
         printf("Divide: ");
         return quotient(rhs);
-      case SUBTRACT:
-        printf("Subtract: ");
-        return difference(rhs);
     }
     return QUIT;
   }
@@ -232,21 +229,7 @@ class Operand {
     } 
     return set(QUIT);
   }
-  OPERAND_TYPE difference(const Operand& rhs) {
-    printf("type = %d \t dvalue = %g \n", type, dvalue);
-    switch(rhs.type){
-      case INTEGER:
-        dvalue = value - (rhs.type == INTEGER ? rhs.value : rhs.dvalue);
-        return set(DOUBLE);
-      case DOUBLE:
-        dvalue = dvalue - (rhs.type == INTEGER ? rhs.value : rhs.dvalue);
-        return set(DOUBLE);
-      default:
-        break;
-    }
-    return set(QUIT);
-  }
-  
+
   OPERAND_TYPE set(const OPERAND_TYPE type) {
     return resultType = type;
   }
