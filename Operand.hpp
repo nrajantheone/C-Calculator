@@ -104,6 +104,9 @@ class Operand {
       case DIVIDE:
         printf("Divide: ");
         return quotient(rhs);
+      case SUBTRACT:
+        printf("Subtract\n");
+        return difference(rhs);
     }
     return QUIT;
   }
@@ -123,23 +126,38 @@ class Operand {
         break;
     }
   }
-  private: 
+
+  private:
+  OPERAND_TYPE sumOrDifference(const Operand& rhs, const bool pOrm = false){
+    switch(rhs.type) {
+      case INTEGER:
+        if(type == INTEGER){
+          value = (pOrm ? value + rhs.value : value - rhs.value);
+          return set(INTEGER);
+        }
+        dvalue = (pOrm ? dvalue + rhs.value : dvalue - rhs.value);
+        return set(DOUBLE);
+      case DOUBLE:
+        dvalue = type == DOUBLE ? dvalue : value + (pOrm ?  rhs.dvalue : -rhs.dvalue);
+        return set(DOUBLE);
+      default:
+        return set(QUIT);
+    }
+    return set(QUIT);
+  }
+
   OPERAND_TYPE sum(const Operand& rhs){
     switch(rhs.type){
-      case INTEGER:
-        value += rhs.value;
-        return set(INTEGER);
-      case DOUBLE:
-        dvalue += rhs.dvalue;
-        return set(DOUBLE);
       case STRING:
         strcat((char*)data, (char*)rhs.data);
         length = strlen((char*)data);
         return set(STRING);
       case QUIT:
         return set(QUIT);
+      default:
+        return sumOrDifference(rhs, true);
     } 
-    return QUIT;
+    return set(QUIT);
   }
 
   int calculateLengthNeeded(const Operand& rhs) const{
@@ -173,7 +191,6 @@ class Operand {
     }
     return false;
   }
-
 
   void makeStringProduct(const Operand& rhs) {
     int req = calculateLengthNeeded(rhs);
@@ -227,6 +244,20 @@ class Operand {
       default:    
         break;
     } 
+    return set(QUIT);
+  }
+  OPERAND_TYPE difference(const Operand& rhs) {
+    switch(type){
+      case INTEGER:
+        value -= rhs.value;
+        return set(INTEGER);
+      case DOUBLE:
+        dvalue -= rhs.dvalue;
+        return set(DOUBLE);
+      case STRING:
+      case QUIT:
+        return set(QUIT);
+    }
     return set(QUIT);
   }
 
