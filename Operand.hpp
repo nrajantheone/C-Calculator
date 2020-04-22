@@ -24,14 +24,11 @@ class Operand {
     char c = '\0';
     int i = 0;
     column = skipSpaces(c);
-    printf("column = %d char = %c\n", column, c);
     column += collectCharacters(c);
-    printf("column = %d char = %c\n", column, c);
     if(!convertToFloat())
       if(!convertToInteger()) {
         type = STRING;
       }
-    printf("dvalue = %g\n", dvalue);
   }
   Operand() : data(NULL), length(0), dvalue(0.0), value(0), type(QUIT), resultType(QUIT) {
     allocateMemory();
@@ -107,11 +104,15 @@ class Operand {
       case SUBTRACT:
         printf("Subtract\n");
         return difference(rhs);
+      case MODULUS:
+        printf("Modulus\n");
+        return remainder(rhs);
     }
     return QUIT;
   }
   void outputResult(){
     std::string s((char*)data);
+    printf("resultType = %d\n", resultType);
     switch(resultType){
       case STRING:
         std::cout << s << std::endl;
@@ -160,6 +161,19 @@ class Operand {
     return set(QUIT);
   }
 
+  OPERAND_TYPE remainder(const Operand& rhs){
+    switch(rhs.type){
+      case INTEGER:
+        return set(remainderInteger(rhs));
+      case DOUBLE:
+        return set(remainderDouble(rhs));
+      case QUIT:
+        return set(QUIT);  
+      default:
+        return remainderInteger(rhs);
+    }
+    return set(QUIT);
+  }
   int calculateLengthNeeded(const Operand& rhs) const{
     return type == STRING && rhs.type == INTEGER
       ? length * rhs.value
@@ -240,6 +254,34 @@ class Operand {
         return set(DOUBLE);
       case DOUBLE:
         dvalue = dvalue / (rhs.type == INTEGER ? rhs.value : rhs.dvalue);
+        return set(DOUBLE);
+      default:    
+        break;
+    } 
+    return set(QUIT);
+  }
+
+  OPERAND_TYPE remainderInteger(const Operand& rhs){
+    switch(type){
+      case INTEGER:
+        value = value % (rhs.type == INTEGER ? rhs.value : (int)rhs.dvalue);
+        return set(INTEGER);
+      case DOUBLE:
+        value = (int)dvalue % (rhs.type == INTEGER ? 
+        rhs.value :(int)rhs.dvalue);
+        return set(INTEGER);
+      default:    
+        break;
+    } 
+    return set(QUIT);
+  }
+  OPERAND_TYPE remainderDouble(const Operand& rhs) {
+     switch(type){
+      case INTEGER:
+        dvalue = value % (rhs.type == INTEGER ? rhs.value : (int)rhs.dvalue);
+        return set(DOUBLE);
+      case DOUBLE:
+        dvalue = (int)dvalue % (rhs.type == INTEGER ? rhs.value :(int)rhs.dvalue);
         return set(DOUBLE);
       default:    
         break;
