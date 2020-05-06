@@ -30,9 +30,9 @@ class Operator {
 
   public:
 
-  Operator(int& column): _op(NONE) {
+  Operator(int& column, FILE* file): _op(NONE) {
     char c;
-    column = skipSpaces(c);
+    column = skipSpaces(c, file);
     _op = isOperator(c);
   }
   OPERATOR getOP() const {

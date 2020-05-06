@@ -19,16 +19,21 @@ class Operator;
 
 class Operand {
   public:
-  Operand(int& column) : data(NULL), length(0), dvalue(0.0), value(0), type(QUIT), resultType(QUIT){
+  Operand(int& column, FILE* file) : data(NULL), length(0), dvalue(0.0), value(0), type(QUIT), resultType(QUIT){
     allocateMemory();
     char c = '\0';
     int i = 0;
-    column = skipSpaces(c);
-    column += collectCharacters(c);
-    if(!convertToFloat())
-      if(!convertToInteger()) {
-        type = STRING;
+    column = skipSpaces(c, file);
+    if(column != EOF){
+      i = collectCharacters(c, file);
+      if(i != EOF){
+        column += i;
+        if(!convertToFloat())
+          if(!convertToInteger()) {
+            type = STRING;
+          }
       }
+    }
   }
   Operand() : data(NULL), length(0), dvalue(0.0), value(0), type(QUIT), resultType(QUIT) {
     allocateMemory();
@@ -49,14 +54,14 @@ class Operand {
       data = NULL;   
   }
   
-  int collectCharacters(const char st) {
+  int collectCharacters(const char st, FILE* file = stdin) {
     int i = 1;
     char  c = '\0';
     ((char*)data)[0] = st;
-    for(; isOperator(c = getchar()) == NONE && !isspace(c); i++ ) {
+    for(; isOperator(c = getc(file)) == NONE && !isspace(c); i++ ) {
       ((char*)data)[i] = c;    
     }
-    if(isOperator(c)) ungetc(c, stdin);
+    if(isOperator(c)) ungetc(c, file);
     ((char*)data)[i + 1] = '\0';
     return (length = i);
   }
